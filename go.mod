@@ -5,6 +5,6 @@ go 1.22.0
 require github.com/gorilla/websocket v1.5.2
 
 require (
-	github.com/gorilla/mux v1.8.1 // indirect
+	github.com/confluentinc/confluent-kafka-go v1.9.2
 	golang.org/x/net v0.23.0 // indirect
 )
