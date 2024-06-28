@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/64bitAryan/go-microservice/types"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
@@ -14,9 +13,10 @@ type DataProducer interface {
 
 type Kafkaproducer struct {
 	producer *kafka.Producer
+	topic    string
 }
 
-func NewkafkaProducer() (*Kafkaproducer, error) {
+func NewkafkaProducer(topic string) (DataProducer, error) {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "localhost"})
 	if err != nil {
 		return nil, err
@@ -28,15 +28,16 @@ func NewkafkaProducer() (*Kafkaproducer, error) {
 			switch ev := e.(type) {
 			case *kafka.Message:
 				if ev.TopicPartition.Error != nil {
-					fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
+					// fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
 				} else {
-					fmt.Printf("Delivered message to %v\n", ev.TopicPartition)
+					// fmt.Printf("Delivered message to %v\n", ev.TopicPartition)
 				}
 			}
 		}
 	}()
 	return &Kafkaproducer{
 		producer: p,
+		topic:    topic,
 	}, nil
 }
 
@@ -47,7 +48,7 @@ func (p *Kafkaproducer) ProduceData(data types.OBUDATA) error {
 	}
 	return p.producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{
-			Topic:     &kafkaTopic,
+			Topic:     &p.topic,
 			Partition: kafka.PartitionAny,
 		},
 		Value: b,
