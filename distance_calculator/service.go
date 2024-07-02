@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/64bitAryan/go-microservice/types"
@@ -12,23 +11,19 @@ type CalculatorServicer interface {
 }
 
 type CalculatorService struct {
-	points [][]float64
+	prevPoint []float64
 }
 
 func NewCalculatorService() CalculatorServicer {
-	return &CalculatorService{
-		points: make([][]float64, 0),
-	}
+	return &CalculatorService{}
 }
 
 func (s *CalculatorService) CalculateDistance(data types.OBUDATA) (float64, error) {
 	distance := 0.0
-	if len(s.points) > 0 {
-		prevPoint := s.points[len(s.points)-1]
-		distance = calculateDistance(prevPoint[0], data.Lat, prevPoint[1], data.Long)
+	if len(s.prevPoint) > 0 {
+		distance = calculateDistance(s.prevPoint[0], data.Lat, s.prevPoint[1], data.Long)
 	}
-	s.points = append(s.points, []float64{data.Lat, data.Long})
-	fmt.Println("Calculating the distance")
+	s.prevPoint = []float64{data.Lat, data.Long}
 	return distance, nil
 }
 
