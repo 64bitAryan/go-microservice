@@ -14,4 +14,10 @@ agg:
 	@go build -o bin/aggregator ./aggregator
 	@./bin/aggregator
 
-.PHONY: obu
+docker-up:
+	@sudo docker-compose up -d
+
+docker-down:
+	@sudo docker-compose down
+
+.PHONY: obu invoicer
