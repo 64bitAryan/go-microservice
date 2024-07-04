@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/64bitAryan/go-microservice/types"
 )
@@ -22,6 +23,7 @@ func main() {
 func makeHTTPTransport(listenAddr string, svc Aggregator) {
 	fmt.Println("HTTP transport running on port", listenAddr)
 	http.HandleFunc("/aggregate", handleAggregate(svc))
+	http.HandleFunc("/invoice", handleGetInvoice(svc))
 	http.ListenAndServe(listenAddr, nil)
 }
 
@@ -36,6 +38,28 @@ func handleAggregate(svc Aggregator) http.HandlerFunc {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			return
 		}
+	}
+}
+
+func handleGetInvoice(svc Aggregator) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		params := r.URL.Query()
+		obuID, err := strconv.Atoi(params.Get("obu"))
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Invalid ObuID"})
+			return
+		}
+		fmt.Println("OBUID is: ", obuID)
+		if obuID <= 0 {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "missing obu id"})
+			return
+		}
+		invoice, err := svc.CalculateInvoice(obuID)
+		if err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, http.StatusOK, invoice)
 	}
 }
 

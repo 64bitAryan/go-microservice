@@ -6,10 +6,6 @@ import (
 	"github.com/64bitAryan/go-microservice/aggregator/client"
 )
 
-// type DistanceCalculator struct {
-// 	consumer DataConsumer
-// }
-
 const (
 	kafkaTopic         = "obudata"
 	aggregatorEndpoint = "http://127.0.0.1:3000/aggregate"
