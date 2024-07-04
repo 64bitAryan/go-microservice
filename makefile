@@ -20,4 +20,8 @@ docker-up:
 docker-down:
 	@sudo docker-compose down
 
+proto:
+	@protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative types/ptypes.proto
+	@go mod tidy
+
 .PHONY: obu invoicer

@@ -4,20 +4,40 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 
 	"github.com/64bitAryan/go-microservice/types"
+	"google.golang.org/grpc"
 )
 
 func main() {
-	port := flag.String("PORT", ":3000", "port address of the  HTTP service")
+	httpListener := flag.String("httpAddr", ":3000", "port address of the  HTTP service")
+	grpcListener := flag.String("grpcAddr", ":3001", "port address of the  GRPC service")
+
 	var (
 		store = NewMemoryStore()
 		svc   = NewInvoiceAggregator(store)
 	)
 	svc = NewLogMiddleware(svc)
-	makeHTTPTransport(*port, svc)
+	go makeGRPCTransport(*grpcListener, svc)
+	makeHTTPTransport(*httpListener, svc)
+}
+
+func makeGRPCTransport(listenAddr string, svc Aggregator) error {
+	fmt.Println("GRPC transport running on port", listenAddr)
+	// Make a TCP listener
+	ln, err := net.Listen("TCP", listenAddr)
+	if err != nil {
+		return err
+	}
+	defer ln.Close()
+	// Make a new GRPC native server with (options)
+	server := grpc.NewServer([]grpc.ServerOption{}...)
+	// register OUR GRPC server implementation to the GRPC package
+	types.RegisterAggregatorServer(server, NewAggregatorGRPCService(svc))
+	return server.Serve(ln)
 }
 
 func makeHTTPTransport(listenAddr string, svc Aggregator) {
