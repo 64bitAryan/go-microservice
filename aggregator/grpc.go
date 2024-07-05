@@ -1,6 +1,10 @@
 package main
 
-import "github.com/64bitAryan/go-microservice/types"
+import (
+	"context"
+
+	"github.com/64bitAryan/go-microservice/types"
+)
 
 type GRPCAggregatorServer struct {
 	types.UnimplementedAggregatorServer
@@ -22,11 +26,11 @@ func NewAggregatorGRPCService(svc Aggregator) *GRPCAggregatorServer {
 		WEBPack -> types.WEBPack -> it converts to -> types.Distance
 */
 
-func (s *GRPCAggregatorServer) AggregateDistance(req types.AggregateRequest) error {
+func (s *GRPCAggregatorServer) Aggregate(ctx context.Context, req *types.AggregateRequest) (*types.None, error) {
 	distance := types.Distance{
 		OBUID: int(req.ObuId),
 		Value: req.Value,
 		Unix:  req.Unix,
 	}
-	return s.svc.AggregateDistance(distance)
+	return &types.None{}, s.svc.AggregateDistance(distance)
 }
