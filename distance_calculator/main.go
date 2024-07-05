@@ -21,9 +21,9 @@ func main() {
 
 	httpClient := client.NewHTTPClient(aggregatorEndpoint)
 	// grpcClient, err := client.NewGRPCClient(aggregatorEndpoint)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	kafkaConsumer, err := NewKafkaConsumer(kafkaTopic, svc, httpClient)
 	if err != nil {
 		log.Fatal(err)
