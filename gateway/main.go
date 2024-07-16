@@ -25,9 +25,10 @@ func newInvoiceHandler(client client.Client) *InvoiceHandler {
 
 func main() {
 	listenAddr := flag.String("listenAddr", ":6000", "listen adderess of the gateway")
+	aggregatorServiceAddr := flag.String("aggServiceAddr", "http://localhost:3000", "listen adderess of aggregator service")
 	flag.Parse()
 	var (
-		client     = client.NewHTTPClient("http://localhost:3000")
+		client     = client.NewHTTPClient(*aggregatorServiceAddr)
 		invHandler = newInvoiceHandler(client)
 	)
 	http.HandleFunc("/invoice", makeApiFunc(invHandler.handleGetInvoice))
@@ -36,7 +37,7 @@ func main() {
 }
 
 func (h *InvoiceHandler) handleGetInvoice(w http.ResponseWriter, r *http.Request) error {
-	inv, err := h.client.GetInvoice(context.Background(), 2)
+	inv, err := h.client.GetInvoice(context.Background(), 4931244646797028242)
 	if err != nil {
 		return err
 	}

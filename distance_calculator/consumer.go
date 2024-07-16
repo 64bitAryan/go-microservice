@@ -33,7 +33,6 @@ func NewKafkaConsumer(topic string, svc CalculatorServicer, aggClient client.Cli
 	c.SubscribeTopics([]string{topic}, nil)
 
 	// A signal handler or similar could be used to set this to false to break the loop.
-
 	return &KafkaConsumer{
 		consumer:    c,
 		isRunning:   true,

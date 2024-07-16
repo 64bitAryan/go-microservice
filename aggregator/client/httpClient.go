@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/64bitAryan/go-microservice/types"
+	"github.com/sirupsen/logrus"
 )
 
 type HTTPClient struct {
@@ -28,7 +29,9 @@ func (c *HTTPClient) GetInvoice(ctx context.Context, id int) (*types.Invoice, er
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", c.Endpoint+"/invoice", bytes.NewReader(b))
+	endpoint := fmt.Sprintf("%s/%s?obu=%d", c.Endpoint, "invoice", id)
+	logrus.Infof("requesting get invoice -> %s   ", endpoint)
+	req, err := http.NewRequest("POST", endpoint, bytes.NewReader(b))
 	if err != nil {
 		return nil, err
 	}

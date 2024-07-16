@@ -49,7 +49,7 @@ func main() {
 func genOBUID(n int) []int {
 	ids := make([]int, n)
 	for i := 0; i < n; i++ {
-		ids[i] = rand.Intn(math.MaxInt)
+		ids[i] = rand.Intn(int(math.Abs(float64(math.MaxInt))))
 	}
 	return ids
 }
